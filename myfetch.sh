@@ -4,7 +4,7 @@
 display_info(){
 
 	d_title=$USER@$HOSTNAME
-	d=$(uname -a | awk '{print $2}')
+	d=$(cat /proc/version | egrep -o '\([A-Z][a-z]+ ' | tr -d \()
 	d_os=$(uname -o)
 	d_kname=$(cat /proc/sys/kernel/ostype)
 	d_kversion=$(cat /proc/sys/kernel/osrelease)
@@ -119,11 +119,11 @@ dWc    .,;::lWWWWW0;:NWWWWK::;,      dWo
 "
 
 display_info
+d=${d,,}
+case "$(echo $d)" in
 
-case "$d" in
-
-	"gentoo") distro="$gentoo" ;;
-	"ubuntu") distro="$ubuntu" ;;
+	'gentoo') distro="$gentoo" ;;
+	'ubuntu') distro="$ubuntu" ;;
 	*) distro="outra" ;;
 esac
 
