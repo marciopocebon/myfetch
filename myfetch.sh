@@ -1,5 +1,30 @@
 #!/usr/bin/env bash
+# TODO Need add news SOs
 
+deps=("bc" "xdg-settings" "xrandr" "lolcat")
+
+for i in ${deps[@]}; do
+	if [[ ! $(which $i 2>/dev/null) ]]; then
+		echo "Need install: $i."
+		exit 1
+	fi
+done
+
+usage(){
+	cat <<EOF
+	
+  MyFetch - Show info system and logo system in ASCII
+  
+  -h, --help           Show help
+  -v, --version        Show version
+  
+  * Version beta 1.0
+  
+EOF
+}
+
+# colors
+g=$(echo -e '\e[36;1m'); y=$(echo -e '\e[32;1m'); o=$(echo -e '\e[m'); p=$(echo -e '\e[m')
 
 display_info(){
 
@@ -8,7 +33,7 @@ display_info(){
 	d_os=$(uname -o)
 	d_kname=$(cat /proc/sys/kernel/ostype)
 	d_kversion=$(cat /proc/sys/kernel/osrelease)
-	d_uptime=$(uptime | awk '{print $3}')" min"
+	d_uptime=$(uptime | awk '{print $3}' | tr -d ,)" min"
 	d_shell=$(basename $SHELL)
 	d_res=$(xrandr | sed -n '1p' | sed 's/.*current.//g;s/,.*//g;s/ //g')
 	d_desk=$XDG_SESSION_DESKTOP
@@ -47,6 +72,9 @@ Architeture: $d_arch
 Browser default: ${d_browser^}
 EOF
 }
+
+display_info
+d=${d,,}
 
 gentoo="
            ':oxkxoc,.                 
@@ -118,13 +146,51 @@ dWc    .,;::lWWWWW0;:NWWWWK::;,      dWo
                                         
 "
 
-display_info
-d=${d,,}
+arch="
+                   .                    
+                   :;                   
+                  ;cc,                  
+                 ,cccl'                 
+                ,lllccl'                
+               'lllllllo.               
+              ..,lolllllo.              
+             ,doc;:looollo'             
+            ;dddddooooooooo,            
+           :dddddoollllllllo;           
+          cdoolcccccccccccccc,          
+         :lccccccc,..,cccccccc;         
+        :ccccccc,      ;ccccccc;        
+      .:ccccccc;        cccccccc:       
+     .ccccccccc.        ,ccccc:;,,      
+    .cccccccccc'        ,cccccccc,.     
+   'cccccc;,..           ..',:ccccc:.   
+  ,cc:,.                       ..,ccc.  
+ ,'.                                .,' 
+
+
+"
+
+
 case "$(echo $d)" in
 
 	'gentoo') distro="$gentoo" ;;
 	'ubuntu') distro="$ubuntu" ;;
-	*) distro="outra" ;;
+	'arch') distro="$arch" ;;
+	*) distro="$outra" ;;
 esac
 
-paste <(printf "%s" "$distro") <(set_info) | lolcat
+if [[ "$1" ]]; then
+	while [[ "$1" ]]; do
+		case "$1" in
+		
+			-h|--help) usage && exit 0 ;;
+			-v|--version) echo Version 1.0 && exit 0 ;;
+			*) echo "Invalid option" && exit 1 ;;
+			
+		esac
+		shift
+	done
+else
+	paste <(printf "%s" "$distro") <(printf "%s" "$(set_info)") | lolcat
+fi
+exit 0
